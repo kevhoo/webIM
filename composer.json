@@ -1,0 +1,15 @@
+{
+    "name": "kevinhoo/webim",
+    "description": "swoole IM",
+    "type": "project",
+    "require": {
+        "twitter/bootstrap": "^3.3",
+        "components/jquery": "^1.10"
+    },
+    "authors": [
+        {
+            "name": "kevhu",
+            "email": "k.hu@qq.com"
+        }
+    ]
+}

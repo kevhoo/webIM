@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊天室</title>
+    <link rel="stylesheet" href="vendor/twitter/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="vendor/twitter/bootstrap/dist/css/bootstrap-theme.min.css">
+</head>
+<body>
+<div class="wrapper">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center" style="margin: 30px;">Swoole WebIM Demo</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div id="container" class="panel-body" style="height: 400px; overflow: hidden; overflow-y: scroll;">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <input id="message" type="text" class="form-control" placeholder="发送消息...">
+                <span class="input-group-btn">
+                    <button id="send" class="btn btn-default" type="button">发送</button>
+                </span>
+            </div><!-- /input-group -->
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+<script src="vendor/components/jquery/jquery.min.js"></script>
+<script>
+    var MSG     = {};
+    MSG.wsServer    = 'ws://127.0.0.1:9051';
+    MSG.websocket   = new WebSocket(MSG.wsServer);
+    MSG.nickname    = '游客' + Math.ceil(Math.random() * 100);
+    MSG.appendMessage   = function(content) {
+        var container   = $('#container');
+        var media       = '<div class="media"><div class="media-left" style="min-width: 50px; text-align: right"><strong>' + content.nickname + ': </strong></div><div class="media-body" style="width:auto"> ' + content.message + ' </div></div>';
+        container.append(media);
+    };
+    MSG.appendNotify    = function (_content) {
+        var media       = '<div class="media"><div class="media-body"> ' + _content + ' </div></div>';
+        $('#container').append(media);
+    };
+    MSG.sendMessage     = function () {
+        var content = $('#message').val();
+        if (content.length == 0 ) return false;
+        data = JSON.stringify({nickname:MSG.nickname, message:content});
+        MSG.websocket.send(data);
+        $('#message').val('');
+    };
+    MSG.websocket.onopen = function (evt) {
+        MSG.appendNotify('连接服务器成功');
+    };
+
+    MSG.websocket.onclose = function (evt) {
+        MSG.appendNotify('断开服务器连接');
+    };
+
+    MSG.websocket.onmessage = function (evt) {
+        msg     = JSON.parse(evt.data);
+        MSG.appendMessage(msg);
+    };
+
+    MSG.websocket.onerror = function (evt, e) {
+        MSG.appendNotify('服务器发生错误');
+    };
+
+    $('#send').click(function(){
+        MSG.sendMessage();
+    });
+    $('#message').keydown(function(e){
+        if (e.which == 13) {
+            MSG.sendMessage();
+        }
+    });
+</script>
+</body>
+</html>
