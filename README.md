@@ -15,3 +15,5 @@ http://127.0.0.1:8080
 swoole 1.8 以上版本
 
 apcu 扩展
+
+redis server
